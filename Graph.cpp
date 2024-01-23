@@ -58,18 +58,13 @@ remember the node B has a variiety of the nodes, so we need to find the specific
 let's see if we can delete one edge first. 
 */
 int x = it->first;
-int y = it->second; //not nesseary 
 
 if(x == n2){ 
 cout<<"\nNow about the delete the data: "<< x;
 adj[n1].erase(it);
 prtspecifc(adj,n1); 
 break; 
-} 
-}
-//prtspecifc(adj,n1); 
-//return adj;
-}
+}}}
 
 
 
@@ -137,7 +132,7 @@ int main()
 		adj[x].clear();
 		//delete adj[x];
 	}
-	//delete[] adj;
+	
 	
 	
 	return 0;
