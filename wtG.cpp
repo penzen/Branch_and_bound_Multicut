@@ -14,6 +14,10 @@ void add_edge( int store[], int start, int end,int wth){
 
 int main(){
 
+  vector<hashmap<pair<int, int>>> trail; 
+
+  
+
 
 list<int> num[10];
 num[0].push_front(10);
