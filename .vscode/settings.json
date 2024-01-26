@@ -6,7 +6,18 @@
         "vector": "cpp",
         "xstring": "cpp",
         "xlocale": "cpp",
-        "xlocnum": "cpp"
+        "xlocnum": "cpp",
+        "xtree": "cpp",
+        "map": "cpp",
+        "utility": "cpp",
+        "span": "cpp",
+        "algorithm": "cpp",
+        "type_traits": "cpp",
+        "xtr1common": "cpp",
+        "xutility": "cpp",
+        "deque": "cpp",
+        "initializer_list": "cpp",
+        "ranges": "cpp"
     },
     "C_Cpp.errorSquiggles": "disabled"
 }

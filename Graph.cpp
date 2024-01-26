@@ -2,47 +2,41 @@
 // using STL. The program basically prints adjacency list
 // representation of graph
 #include <bits/stdc++.h>
+#include <map>
 using namespace std;
 
 // To add an edge
-void addEdge(vector <pair<int, int> > adj[], int u,
-									int v, int wt)
+void addEdge(multimap<int,pair<int,int>> adj,int u,int v, int wt)
 {
-	adj[u].push_back(make_pair(v, wt));
-	adj[v].push_back(make_pair(u, wt));
+	trl.insert(make_pair(u ,make_pair(wt,v))); // Vertex --> pair(weight, vertex)
+    trl.insert(make_pair(v,make_pair(wt,u)));
 }
 
 // Print adjacency list representation of graph
-void printGraph(vector<pair<int,int> > adj[], int V)
+void printGraph(multimap<int, pair<int, int>> adj)
 {
-	int v, w;
-	for (int u = 0; u < V; u++)
-	{
-		cout << "Node " << u << " makes an edge with \n";
-		for (auto it = adj[u].begin(); it!=adj[u].end(); it++)
-		{
-			v = it->first;
-			w = it->second;
-			cout << "\tNode " << v << " with edge weight ="
-				<< w << "\n";
-		}
-		cout << "\n";
-	}
-}
-
-void prtspecifc(vector<pair<int,int>> adj[], int index){
-
-int x; 
-int y;
-cout<<"\nPrininting spefic index of "<< index; 
-for(auto id = adj[index].begin();id != adj[index].end();id++)
-{
-	x = id->first;
-	y = id->second;
-	cout<<"\n" <<"The node is: " << x <<"\nThe weights are: " << y;
+multimap<int, pair<int, int>>::iterator it = adj.begin();
+while (it != adj.end()) { 
+  pair<int, int> value = it->second;
+  int first = value.first;
+  int second = value.second;
+  
+  cout << "The node: "<< it->first << " The weight:  "<< second << " The connected node:  " <<first<< "\n";
+  it++; 
 }}
-// how to return an array 
-//return the updated graph
+void prtspecifc(multimap<int, pair<int, int>> adj, int node){
+multimap<int, pair<int, int>>::iterator it = adj.find(node);
+while (it != adj.end()) { 
+  pair<int, int> value = it->second;
+  int first = value.first;
+  int second = value.second;
+
+  cout << "The node: "<< it->first << " The weight:  "<< second << " The connected node:  " <<first<< "\n";
+  it++; 
+  if(it->first != node){
+    break; 
+  }}}
+
 void remove_edge(vector<pair<int,int>> adj[],int n1,int n2){
 /*
  remove the edge between them
