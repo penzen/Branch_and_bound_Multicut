@@ -1,7 +1,8 @@
-/*
+
 #include <iostream>
 #include <vector>
-
+#include <algorithm>
+/*
 class Graph {
 private:
     int V; // Number of vertices
@@ -123,11 +124,8 @@ void Graph::addEdge(int v, int w)
     adj[v].push_back(w);
     adj[w].push_back(v);
 }
- 
-// Driver code
-int main()
-{
-    // Create a graph given in the above diagram
+/*
+// Create a graph given in the above diagram
     Graph g(5); // 5 vertices numbered from 0 to 4
     g.addEdge(1, 0);
     g.addEdge(2, 1);
@@ -135,6 +133,35 @@ int main()
  
     cout << "Following are connected components \n";
     g.connectedComponents();
+*/
  
+// Driver code
+int main()
+{
+
+    
+    
+    int target = 4;
+
+    // Using the vector's find() method (C++20 and later)
+    
+
+    
+    vector<int> numbers = {1, 4, 2, 8, 5};
+    auto it = std::find(numbers.begin(), numbers.end(), 5);  // Find the value 5
+
+    if (it != numbers.end()) {
+        std::cout << "Found 5 at index: " << std::distance(numbers.begin(), it) << std::endl;
+    } else {
+        std::cout << "Value 5 not found." << std::endl;
+    }
+    
+    
     return 0;
 }
+
+
+
+ 
+
+
