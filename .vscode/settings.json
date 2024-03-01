@@ -52,7 +52,8 @@
         "xiosbase": "cpp",
         "xlocinfo": "cpp",
         "xmemory": "cpp",
-        "xstddef": "cpp"
+        "xstddef": "cpp",
+        "set": "cpp"
     },
     "C_Cpp.errorSquiggles": "disabled"
 }
