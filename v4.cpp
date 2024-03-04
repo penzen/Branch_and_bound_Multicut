@@ -205,10 +205,9 @@ while (sit != adj.end()) {
 for(int x = 0; x < alpha.size(); x++){
 if(alpha[x].second == two){
   adj = addEdge(adj,combined,alpha[x].first,0);
+  adj = remove_edge_2(adj,one,two);
 }
-
 for(int y = 0; y < beta.size(); y++){
-
   if(alpha[x].second == beta[y].second){// it's not talking into account that it it's cut there could be edges that are not in one 
     if(beta[y].second == one){
       continue;
@@ -223,6 +222,41 @@ for(int y = 0; y < beta.size(); y++){
  
  // this for the cut edges could be put into a new method 
  
+multimap<int, pair<int, int>>::iterator rerun = adj.find(one);
+multimap<int, pair<int, int>>::iterator tst = adj.find(two);
+
+ //if(it->first == )
+
+cout<<"The value of it is: "<<rerun->first<<endl;
+cout<<"The value of sit is: "<<tst->first<<endl;
+
+// kind of works like stacks where everything is reset as in the it and sit; 
+
+ while(rerun != adj.end() ){
+   rerun = adj.find(one);
+   cout<<"The value of rerun is: "<<rerun->first<<endl;
+   if(rerun->first == one){
+        cout<<"rerun second : "<<rerun->second.second<<endl; 
+        int rewe = rerun->second.second;
+     adj = addEdge(adj,combined,rerun->second.first,rerun->second.second);
+     adj = remove_edge_2(adj,one,rewe); 
+  }else{
+    cout<<"We are in the break condition " <<rerun->first<<endl;
+    break;}}
+
+while(tst != adj.end() ){
+   tst = adj.find(two);
+   cout<<"The value of sit is: "<<tst->first<<endl;
+   if(tst->first == two){
+        cout<<"sit second : "<<tst->second.second<<endl; 
+        int rewe = tst->second.second;
+     adj = addEdge(adj,combined,tst->second.first,tst->second.second);
+    // cout<<"sit second : "<<sit->second.second<<endl; 
+     adj = remove_edge_2(adj,two,rewe);
+  }else{
+    cout<<"We are in the break condition " <<tst->first<<endl;
+    break;}} 
+
  
 return adj;
 }
@@ -285,21 +319,15 @@ multimap<int,pair<int,int>> depth_search(multimap<int,pair<int,int>> adj,multima
 cout<<"--------------------------------------------------------"<<endl;
 cout<<"The found node is : "<<node<<endl;
 multimap<int, pair<int, int>>::iterator it = adj.find(node);
-
-if(cut.size() == 0){ // initially there is nothing
+//base case 
+if(cut.size() == 0){ 
 pair<int,int> tep = it->second;
 cut = addEdge(cut,node,tep.first,tep.second);
 cout<<"It's  in the cut size 0 if condition"<<endl;
 cut = depth_search(adj,cut,tep.second,bound);
 }
-
-//base case 
-
-
-
 for(int x =0; x < adj.size(); x++){
 
-  
   // check which branch increases the node most or the one with the higest value.  
   // the problem with this is their will be nodes that have a 
 
@@ -314,6 +342,8 @@ if(bs == true ){ // if true then we can triverse through  it
 // recurse here because we can triverse it 
 cut = addEdge(cut,node,ref.first,ref.second);
 cout<<"Before going into the recurstion djjsdncordcwskdfpowesdolwksdcmlkm"<<endl;
+join(adj,node,ref.second); // then for this section we could add another statement for the recusion 
+// also need to join the cut parts here.
 cut = depth_search(adj,cut,ref.second,bound);}
 else{ 
 it++;
@@ -339,6 +369,7 @@ multimap<int,pair<int,int>> test;
 multimap<int,pair<int,int>> result;
  
  test = addEdge(test,1,3,2);
+ test = addEdge(test,1,3,3);
  test = addEdge(test,1,1,4);
  test = addEdge(test,1,1,10);
  test = addEdge(test,2,10,3);
@@ -364,11 +395,13 @@ adj =join(adj,1,3);
 */
 
  
-result = depth_search(adj,result,1,2);
+//result = depth_search(adj,result,1,2);
 
-cout<<"This is after the recursion";
-printGraph(result);
-
+//cout<<"This is after the recursion";
+printGraph(test);
+cout<<"after"<<endl;
+test = join(test,1,3);
+printGraph(test);
 
 
 
