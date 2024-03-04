@@ -279,7 +279,59 @@ while (it != adj.end()) {
   }
 return counter; }
 
+// the recusion is repeting because the cut is not being updated properly 
+multimap<int,pair<int,int>> depth_search(multimap<int,pair<int,int>> adj,multimap<int,pair<int,int>> cut,int node,int bound){
 
+cout<<"--------------------------------------------------------"<<endl;
+cout<<"The found node is : "<<node<<endl;
+multimap<int, pair<int, int>>::iterator it = adj.find(node);
+
+if(cut.size() == 0){ // initially there is nothing
+pair<int,int> tep = it->second;
+cut = addEdge(cut,node,tep.first,tep.second);
+cout<<"It's  in the cut size 0 if condition"<<endl;
+cut = depth_search(adj,cut,tep.second,bound);
+}
+
+//base case 
+
+
+
+for(int x =0; x < adj.size(); x++){
+
+  
+  // check which branch increases the node most or the one with the higest value.  
+  // the problem with this is their will be nodes that have a 
+
+pair<int, int> ref = it->second;
+int alpha = it->first;
+cout<<"It value: "<<it->first<<endl;
+cout<<"ref value: "<<ref.first<<" node: "<<ref.second<<endl;
+
+bool bs = checkcut(cut,it->first,ref.second);
+
+if(bs == true ){ // if true then we can triverse through  it 
+// recurse here because we can triverse it 
+cut = addEdge(cut,node,ref.first,ref.second);
+cout<<"Before going into the recurstion djjsdncordcwskdfpowesdolwksdcmlkm"<<endl;
+cut = depth_search(adj,cut,ref.second,bound);}
+else{ 
+it++;
+}
+
+if(it->first != node){
+//return cut;
+cout<<"It's in the break condition"<<endl;
+  break;
+}} 
+
+cout<<"The end print graph"<<endl;
+cout<<"The size of the cut: "<<cut.size()<<endl;
+printGraph(cut);
+cout<<"--------------------------------------------------------"<<endl;
+return cut;
+
+}
 
 int main(){
 multimap<int,pair<int,int>> adj;
@@ -304,11 +356,18 @@ multimap<int,pair<int,int>> result;
 
 //we can work with sizes 
 
+/*
 prtspecifc(adj,1);
 prtspecifc(adj,3);
 adj =join(adj,1,3);
 
-printGraph(adj);
+*/
+
+ 
+result = depth_search(adj,result,1,2);
+
+cout<<"This is after the recursion";
+printGraph(result);
 
 
 
@@ -346,6 +405,7 @@ cout<<"after: "<<'\n';
 }
 
 
+
 // consistency test for branching
  multimap<int,pair<int,int>> multi_cut(multimap<int,pair<int,int>> adj,multimap<int,pair<int,int>> cut,int node,int bone, int btwo ){
   
@@ -375,9 +435,6 @@ if(it->first == node)// this would be the current node
   else{
     continue;
   }
-
-   
-
 }
 
 
@@ -393,6 +450,5 @@ if(it->first == node)// this would be the current node
 }
 
 // for the greedy choose chose the lowest number, cause that is what we want to cut.
-
 
 
