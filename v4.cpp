@@ -212,7 +212,7 @@ for(int y = 0; y < beta.size(); y++){
     if(beta[y].second == one){
       continue;
     }else{
-        adj = addEdge(adj,combined,alpha[x].first + beta[x].first,beta[y].second); 
+        adj = addEdge(adj,combined,alpha[x].first + beta[y].first,beta[y].second); 
         adj = remove_edge_2(adj,one,beta[y].second);
         cout<<"The removed value of one is: " <<beta[y].second<<endl;
         adj = remove_edge_2(adj,two,beta[y].second);
@@ -227,11 +227,10 @@ multimap<int, pair<int, int>>::iterator tst = adj.find(two);
 
  //if(it->first == )
 
-cout<<"The value of it is: "<<rerun->first<<endl;
-cout<<"The value of sit is: "<<tst->first<<endl;
 
 // kind of works like stacks where everything is reset as in the it and sit; 
-
+/*
+*/
  while(rerun != adj.end() ){
    rerun = adj.find(one);
    cout<<"The value of rerun is: "<<rerun->first<<endl;
@@ -314,20 +313,45 @@ while (it != adj.end()) {
 return counter; }
 
 // the recusion is repeting because the cut is not being updated properly 
+
+
+/*
+*/
 multimap<int,pair<int,int>> depth_search(multimap<int,pair<int,int>> adj,multimap<int,pair<int,int>> cut,int node,int bound){
 
-cout<<"--------------------------------------------------------"<<endl;
+  multimap<int,pair<int,int>> anone; // for the refrence and comparision of the data structure 
+  multimap<int,pair<int,int>> antwo;
+
+cout<<"-----------------start of recursion--------------------------------------"<<endl;
 cout<<"The found node is : "<<node<<endl;
 multimap<int, pair<int, int>>::iterator it = adj.find(node);
 //base case 
 if(cut.size() == 0){ 
 pair<int,int> tep = it->second;
-cut = addEdge(cut,node,tep.first,tep.second);
 cout<<"It's  in the cut size 0 if condition"<<endl;
-cut = depth_search(adj,cut,tep.second,bound);
+// need to add another base case here because this will recursivly go on for the join part where there is no cut. 
+cut = addEdge(cut,node,tep.first,tep.second);
+adj = remove_edge_2(adj,node,tep.second);
+anone = depth_search(adj,cut,tep.second,bound); //need a proper data structure to handale that 
+// then call the recursion for the cut; 
+cut = remove_edge_2(adj,node,tep.second); 
+int combo = 100 + node + tep.second;
+multimap<int, pair<int, int>>::iterator jn = adj.find(node);
+// the first node is always going to be  0 so we will have to move to the next node. 
+
+while(jn != adj.end()){
+  if(jn->second.second != 0){
+    cout<<"The value of Jn is: "<<jn->second.second<<endl;
+    break;
+  }else {
+    jn++;
+  }
+}
+//now that the itterator is updated 
+adj = join(adj,node,tep.second );
+antwo = depth_search(adj,cut,jn->second.second,bound); 
 }
 for(int x =0; x < adj.size(); x++){
-
   // check which branch increases the node most or the one with the higest value.  
   // the problem with this is their will be nodes that have a 
 
@@ -335,153 +359,94 @@ pair<int, int> ref = it->second;
 int alpha = it->first;
 cout<<"It value: "<<it->first<<endl;
 cout<<"ref value: "<<ref.first<<" node: "<<ref.second<<endl;
-
-bool bs = checkcut(cut,it->first,ref.second);
-
+bool bs = checkcut(cut,it->first,ref.second); // before join 
 if(bs == true ){ // if true then we can triverse through  it 
-// recurse here because we can triverse it 
-cut = addEdge(cut,node,ref.first,ref.second);
+
 cout<<"Before going into the recurstion djjsdncordcwskdfpowesdolwksdcmlkm"<<endl;
-join(adj,node,ref.second); // then for this section we could add another statement for the recusion 
-// also need to join the cut parts here.
-cut = depth_search(adj,cut,ref.second,bound);}
+// cutting
+cut = addEdge(cut,node,ref.first,ref.second);
+adj = remove_edge_2(adj,node,ref.second);
+anone = depth_search(adj,cut,ref.second,bound); //need a proper data structure to handale that 
+//joing
+cut = remove_edge_2(adj,node,ref.second); 
+int combo = 100 + node + ref.second;
+multimap<int, pair<int, int>>::iterator jn = adj.find(node);
+
+while(jn != adj.end()){
+  if(jn->second.second != 0){
+    break;
+  }else {
+    jn++;}}}
 else{ 
 it++;
 }
-
-if(it->first != node){
+if(it->first != node ){ // the condition alredy checks the size.
 //return cut;
 cout<<"It's in the break condition"<<endl;
-  break;
-}} 
+  break;}}
 
-cout<<"The end print graph"<<endl;
-cout<<"The size of the cut: "<<cut.size()<<endl;
-printGraph(cut);
-cout<<"--------------------------------------------------------"<<endl;
-return cut;
+// this is wrong why would we need two data structure. 
+// and I think there might be a problem with the pointer.
+multimap<int, pair<int, int>>::iterator oe = anone.find(node);
+multimap<int, pair<int, int>>::iterator tw = antwo.find(node);
+if(oe->second.second > tw->second.second){
+  cout<<"Anone is bigger "<<endl;
+  cout<<"anone value: "<<oe->second.second<<endl;
+  cout<<"antwo value: "<<tw->second.second<<endl;
+  return anone;
+}
+else{
+   cout<<"Anone is bigger "<<endl;
+   cout<<"antwo value: "<<tw->second.second<<endl;
+   cout<<"anone value: "<<oe->second.second<<endl;
+    return antwo;}
+cout<<"-------------------end of recursion ------------------------------------"<<endl;
+}
+
+void  doo(multimap<int,pair<int,int>> adj,int node){
 
 }
+
 
 int main(){
 multimap<int,pair<int,int>> adj;
 multimap<int,pair<int,int>> test;
 multimap<int,pair<int,int>> result;
  
- test = addEdge(test,1,3,2);
- test = addEdge(test,1,3,3);
- test = addEdge(test,1,1,4);
- test = addEdge(test,1,1,10);
- test = addEdge(test,2,10,3);
- test = addEdge(test,3,1,5);
- test = addEdge(test,3,1,15);
+ /*
  adj = addEdge(adj,1,-1,2);
  adj = addEdge(adj,1,2,3);
  adj = addEdge(adj,1,-3,4);
+ adj = addEdge(adj,1,3,5);
  adj = addEdge(adj,2,3,3);
  adj = addEdge(adj,2,4,4);
+ adj = addEdge(adj,2,1,5);
  adj = addEdge(adj,3,1,4);
-
-
-
-
-//we can work with sizes 
-
-/*
-prtspecifc(adj,1);
-prtspecifc(adj,3);
-adj =join(adj,1,3);
-
-*/
-
+ adj = addEdge(adj,3,2,5);
+ adj = addEdge(adj,4,1,5);
  
-//result = depth_search(adj,result,1,2);
+ */
+ 
+ 
+adj = addEdge(adj,1,1,2);
+adj = addEdge(adj,1,1,3);
+adj = addEdge(adj,2,1,3);
+ 
 
+//add method might be messing things 
+ 
+ // also look into the pointer so it->second.second 
+// that might be causing problems. 
+
+
+// the problem seems to be when we start from 1 
+// it just skips over 2 
+// every other itteration works except for 1
+depth_search(adj,test,2,0);
+//result = depth_search(adj,result,1,2)
 //cout<<"This is after the recursion";
-printGraph(test);
-cout<<"after"<<endl;
-test = join(test,1,3);
-printGraph(test);
 
-
-
-// join does not have 2; 
-
-/*
-cout<<"Before: "<<'\n';
-printGraph(test);
-test = join(test,1,2);
-cout<<"after: "<<'\n';
-printGraph(test);
-
-*/
-
-
- //prtspecifc(adj,1);
-
-/*
- cout<<"Before: "<<'\n';
- printGraph(adj);
-
-cout<< "The size of the graph is: "<< count(adj)<<'\n';  
-adj = join(adj,3,4);
-adj = join(adj,1,2);
-cout<<"after: "<<'\n';
- printGraph(adj);
- cout<< "The size of the graph is: "<< count(adj)<<'\n';
-*/
-
-
-
-
-
+return 0;
 }
-
-
-
-// consistency test for branching
- multimap<int,pair<int,int>> multi_cut(multimap<int,pair<int,int>> adj,multimap<int,pair<int,int>> cut,int node,int bone, int btwo ){
-  
-// finding the first set that has been joined
-// there has to be another multimap to provide the answers 
-// the  join could be seen as the partisions of graph 
-  multimap<int,pair<int,int>> answer;
-  multimap<int, pair<int, int>>::iterator it = adj.find(node);
-  pair<int, int> alpha = it->second;
-  pair<int, int> beta = it->second;
-
-// base case 
-if(count(adj) < 2 || bone > btwo ){ // meaning if all the nodes are connected 
- return  answer = adj;
-}
-
-for(int x = 0; x < adj.size(); x++){
-// greedy selection. 
-// we choose the brannch with the highest weight
-alpha = it->second; 
-int highest = 0;
-if(it->first == node)// this would be the current node 
-{
-  if(highest < alpha.first){
-    highest = alpha.first;
-  }
-  else{
-    continue;
-  }
-}
-
-
-}
-  if(alpha.first > beta.second){
- // we could perform a cut 
- // or go into it recuesivly 
- adj = remove_edge_2(adj,it->first,beta.second); // cut 
- multi_cut(adj,cut, bone,btwo,32); // it will be reversed because we will have that as the initial bound in the next itteration. 
-  }else{
-// join 
-  }  
-}
-
-// for the greedy choose chose the lowest number, cause that is what we want to cut.
 
 
