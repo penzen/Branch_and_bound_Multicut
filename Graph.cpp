@@ -18,6 +18,7 @@ multimap<int,pair<int,int>> jyon;
 multimap<int,pair<int,int>> jcut;
 multimap<int,pair<int,int>> part;
 multimap<int,pair<int,int>> pcut;
+multimap<int,pair<int,int>> bd_ref;
 int drac = 0; 
 int bo = 0;
 int up = 0; 
@@ -69,7 +70,7 @@ while (it != adj.end()) {
   int wt = value.first;
   int node = value.second;
 
-  cout << "The node: "<< it->first <<"----"<<  wt << "--->connected node:  " <<node<< "\n";
+  cout << "The node: "<< it->first <<"--- "<<  wt <<  "--->connected node:  " <<node<< "\n";
   it++; 
 }}
 
@@ -389,8 +390,8 @@ bound = inital_bounder(adj);
 one = depth_search(join(adj,node,tep.second),one,j,bound,lower);
 cout<<"After the join recrusion is fininshed in first "<<endl;
 lower = one.bo;// this is lower bound before we go in the recrusion.
-cout<<"The size of the graphs part:"<<one.part.size()<<endl;
-cout<<"  join: "<<one.jyon.size()<<endl;
+cout<<"The size of the graphs part: @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"<<one.part.size()<<endl;
+cout<<"  Bound: "<<one.bo<<endl;
 printGraph(one.jyon);
 
 //cut 
@@ -458,6 +459,7 @@ if(x > 0){
   if (checkcut(one.pcut, it->first,it->second.second)){
     cout<<"The bool check is true "<<endl;
   } 
+    one.bd_ref = adj;
     one.bo = bounder(adj,one.pcut);
     return one;
     break;
@@ -490,23 +492,26 @@ tulip ken = one;
 // join
 one.jcut = one.pcut;// keep a refrecne that way we don't have to deal with the other one.
 one.pcut = join(one.pcut,node,ref.second);
+one.jyon = join(adj,node,ref.second);
+one.bd_ref = one.jyon; /////////////////
 int j = 100 + node + ref.second;
 // check the valie of bolder berfore recrusing 
 cout<<"The value of cut one.bo updating "<<one.bo<<endl;
-one.bo = bounder(adj,one.pcut); //calculate the bound  
+ one.bo = frcut(adj,one.pcut); //calculate the bound  
+// one.bo = bounder(adj,one.pcut);
 
 if(lower > one.bo && lower > 0){
   cout<<"Condition where the lower bound is greater then upper "<<one.bo <<endl; 
   cout<<"Lower: "<<lower<<endl;
-  one.bo = lower; // we are stiking with the better bound
+  one.bo = bounder(adj,one.pcut); // we are stiking with the better bound
   one = ken; // we update it back to the previous setting.
   return one; 
   break;
 }
 
 cout<<"Value of bounder before going into the recursion join: "<<one.bo<<endl;
-one = depth_search(join(adj,node,ref.second),one,j,bound,lower);
-lower = one.bo;
+one = depth_search(one.jyon,one,j,bound,lower);
+lower = bounder(one.bd_ref,one.pcut);//////
 cout<<"It's returns here, the bound is also updated: "<<one.bo<<endl;
 
 
@@ -524,11 +529,11 @@ printGraph(adj);
 ken.pcut = addEdge(one.pcut,node,ref.first,ref.second);
 ken.part = remove_edge_2(adj,node,ref.second); // another way would be to return at the end condition, it's more efficent.
 
+
 cout<<"Value of one.bo before going into the recursion Cut: "<<one.bo<<endl;
 ken.bo = bounder(adj,ken.pcut);
-//ken.bo = frcut(adj,ken.pcut); //calculate the bound 
 cout<<"Value of ken.bobefore going into the recursion Cut: "<<ken.bo<<endl;
-//check the 105 problem next. 
+
 
 if(lower > ken.bo) // means even the lower bound of the one is better that means there is no use going in here 
 {
@@ -540,9 +545,10 @@ if(lower > ken.bo) // means even the lower bound of the one is better that means
  // return ken;  // this is causeing the problem because we are returning the one with the lower bound
   break;
 }
-
-ken = depth_search(remove_edge_2(adj,node,ref.second),ken,ref.second,bound,lower); //returns here 
+//ken.part = remove_edge_2(adj,node,ref.second);
+ken = depth_search(ken.part,ken,ref.second,bound,lower); //returns here 
 cout<<"The original bound is : "<<bound<<endl;
+//ken.bo = bounder(adj,ken.pcut);
 cout<<"The  bound after remove : "<<ken.bo<<endl;
 printGraph(ken.jyon);
 cout<<"Value of ken jyon"<<endl;
@@ -581,12 +587,8 @@ multimap<int,pair<int,int>> test;
 tulip graph;
 tulip one;
 
-  
-
-
-
-// data being inputed
-vector<vector<int>> myGraphData = readGraphData("graph_test.txt");
+/*
+vector<vector<int>> myGraphData = readGraphData("hund.txt");
 for (int x = 0; x < myGraphData.size(); x++) { // Iterate over lines
     for (int y = 0; y < myGraphData[x].size(); y++) { // Iterate over weights in a line
         int weight = myGraphData[x][y];
@@ -597,21 +599,39 @@ for (int x = 0; x < myGraphData.size(); x++) { // Iterate over lines
     }
 }
 
+*/
+//  cout <<"The upper bound is: "<<frcut(adj,test)<<endl;
 
+adj = addEdge(adj,1,5,2); 
+adj = addEdge(adj,1,1,3); 
+adj = addEdge(adj,1,1,4);
+adj = addEdge(adj,1,1,5);
+adj = addEdge(adj,1,1,6);
+adj = addEdge(adj,2,5,3);
+adj = addEdge(adj,2,1,4);
+adj = addEdge(adj,2,1,5); 
+adj = addEdge(adj,2,1,6); 
+adj = addEdge(adj,3,1,4);
+adj = addEdge(adj,3,1,5);
+adj = addEdge(adj,3,1,6);
+adj = addEdge(adj,4,1,5);
+adj = addEdge(adj,4,1,6);
+adj = addEdge(adj,5,8,6);
 
-
-
-graph = depth_search(adj,graph,15,0,0); 
+graph = depth_search(adj,graph,2,0,0); 
 
 
 //checkcut(test,1,2)
 
- /*
+
+
+
+ 
 cout<<"===============Cut================"<<endl;
 printGraph(graph.part);
 cout<<"===============Join================"<<endl;
 printGraph(graph.jyon);
- */
+ 
 return 0;
 }
 
