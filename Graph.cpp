@@ -18,10 +18,11 @@ multimap<int,pair<int,int>> jyon;
 multimap<int,pair<int,int>> jcut;
 multimap<int,pair<int,int>> part;
 multimap<int,pair<int,int>> pcut;
+multimap<int,pair<int,int>> cluster;
 multimap<int,pair<int,int>> bd_ref;
 int drac = 0; 
 int bo = 0;
-int up = 0; 
+int lo_ref = 0;
 };
 
 vector<std::vector<int>> readGraphData(const string& filename) {
@@ -222,8 +223,7 @@ return adj;
 bool checkcut(multimap<int,pair<int,int>> cut,int a, int b){
 
  multimap<int, pair<int, int>>::iterator it = cut.find(a);
- multimap<int, pair<int, int>>::iterator update_one = cut.find(b);
-
+ 
  bool value = false;
 
 if(cut.size() == 0){
@@ -239,8 +239,7 @@ if(it->first == 0) // means it does not exist
  
  if(it->first == cut.size()) // means it does not exist 
  { 
-  if(it->second.second > 5000){
-  cout<<"Node: "<<a<<"---- join ---- "<<b<<endl; 
+  if(it->second.second > 8000){
   cout<<"It does not exist condition: "<<it->first<<endl;
   return true;}} 
 
@@ -263,11 +262,50 @@ if(node == b){
 
 
 
-// we could just use the join method it could potentially work. 
+int nd_bounder(multimap<int,pair<int,int>> adj,int node,multimap<int,pair<int,int>> cut){
+int zone = 0;
+multimap<int, pair<int, int>>::iterator it = adj.begin();
+// add 0 then find the node we want;
+for(int y = adj.size(); y > 0; y-=2){
+  it = adj.begin();
+if(it->first == 0){
+  zone+= it->second.first;
+}else{
+    it = adj.find(node);
+    if(it->first != node){
+      break; 
+    }
+    if(checkcut(cut, it->first,it->second.second)  == true){
+    zone+= it->second.first;
+    cout<<"VALue of zone after adding: "<<zone<<endl;
+}}
+adj = remove_edge_2(adj, it->first,it->second.second);}
+ 
+ return zone;}
 
-// if it's true then we could combine the variables and add the data strucutre at the end. 
-// It could be refrence of we could completely replace the  element we combined it, meaning 
-// the data struture will not have duplicates now 
+int nd_frcut(multimap<int,pair<int,int>> adj,int node,multimap<int,pair<int,int>> cut){
+int zone = 0;
+multimap<int, pair<int, int>>::iterator it = adj.begin();
+// add 0 then find the node we want;
+for(int y = adj.size(); y > 0; y-=2){
+  it = adj.begin();
+if(it->first == 0){
+  zone+= it->second.first;
+}else{
+    it = adj.find(node);
+    if(it->first != node){
+      break; 
+    }
+    if(checkcut(cut, it->first,it->second.second)  == true){
+    if(it->second.first > 0){
+      zone+= it->second.first;
+    }
+}}
+adj = remove_edge_2(adj, it->first,it->second.second);}
+ 
+ return zone;}
+
+
 
 
    
@@ -285,45 +323,6 @@ while (it != adj.end()) {
        it++;
   }
 return counter; }
-
-
-tulip jjl(multimap<int,pair<int,int>> adj,tulip one,int node,int bound){
-  cout<<"--------------------------------------------------------"<<endl;
-  cout<<"The found node is : "<<node<<endl;
-  printGraph(adj);
-  cout<<"The value of count(adj) is "<<count(adj)<<endl;
-  if(count(adj) == 0) // means we have gone through all the joins
-{ // this works because it's the final condition/
- // one.jyon = adj;
-  return one;
-}
-multimap<int, pair<int, int>>::iterator it = adj.find(node);
-if(it->second.second == 0){ // this will never be 0 because we are putting the joined elements in
-  while(it != adj.end()){
-    cout<<"The while loop value is: "<<it->second.second<<endl;
-    if(it->second.second != 0){
-      break;
-    }
-    it++;}}
-// now  the itterator will be set to the number we want to itterate
-for(int x = 0; x < adj.size(); x++){
-//it = adj.find(node);
-cout<<"The value of it is " <<it->first<<endl;
-cout<<"The value of second  is " <<it->second.second<<endl;
-if(it->second.second == 0){
-  // even after the itteration if we get a 0 this means it's all been joined
-  return one;
-  break;}
-int ct = 100 + node + it->second.second;
-one.jyon = join(adj,node,it->second.second); // this also works 
-one = jjl(join(adj,node,it->second.second),one,ct,0);
-
-break;  // we don't need to itterate after the recursion 
-}
-  cout<<"Out of the loop"<<endl;
- // one.jyon = adj; // it won't work here because it's being updated 
-  printGraph(one.jyon);
-  return one;} 
     
 int inital_bounder(multimap<int,pair<int,int>> adj){
 int cal = 0;
@@ -386,11 +385,11 @@ pair<int,int> tep = mit->second;
 // join
 tulip ken = one; 
 int j = 100 + node + tep.second;
+one.cluster = addEdge(one.cluster,node,tep.second,j); 
 bound = inital_bounder(adj);
 one = depth_search(join(adj,node,tep.second),one,j,bound,lower);
 cout<<"After the join recrusion is fininshed in first "<<endl;
 lower = one.bo;// this is lower bound before we go in the recrusion.
-cout<<"The size of the graphs part: @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"<<one.part.size()<<endl;
 cout<<"  Bound: "<<one.bo<<endl;
 printGraph(one.jyon);
 
@@ -423,7 +422,7 @@ if(count(adj) == 0) // means we have gone through all the joins or cuts
 
 multimap<int, pair<int, int>>::iterator it = adj.find(node); // this becomes the adj 
 
- if ( it->first == adj.size()  ){ 
+ if ( it->first == adj.size()  ){  // this isn't actually usedfull anymore
 cout<< "It's in the other case"<<endl;
   if(it->second.first == 0) // means that this has all been cut 
 { one.jcut = adj;
@@ -438,10 +437,9 @@ while(it != adj.end() )
     }}
   it++;}
 
+
 cout<<"Value of it after while loop: " <<it->first<<endl;
 cout<<"Value of second after while loop: " <<it->second.second<<endl;
-
-
 
 int rl = it->second.second; 
 for(int x =0; x < adj.size(); x++){ 
@@ -455,10 +453,6 @@ if(x > 0){
 
   if (rl == ref.second){
  cout<<"It's in the condition where there is nothing else to itterate"<<endl;
-
-  if (checkcut(one.pcut, it->first,it->second.second)){
-    cout<<"The bool check is true "<<endl;
-  } 
     one.bd_ref = adj;
     one.bo = bounder(adj,one.pcut);
     return one;
@@ -469,7 +463,7 @@ if(x > 0){
 
 if(ref.first != 0){ // don't need this check it's already been done above 
 if(checkcut(one.pcut,it->first,ref.second) == true ){ 
-printGraph(adj);
+
 
 cout<<"The size of one.part after cut: "<<adj.size()<<endl;
 cout<<"====================Before going into the recurstion ==========================="<<endl;
@@ -490,50 +484,52 @@ else{
 
 tulip ken = one;
 // join
+//one.bo = frcut(adj,one.pcut); //current bound 
+
 one.jcut = one.pcut;// keep a refrecne that way we don't have to deal with the other one.
 one.pcut = join(one.pcut,node,ref.second);
 one.jyon = join(adj,node,ref.second);
+ 
 one.bd_ref = one.jyon; /////////////////
 int j = 100 + node + ref.second;
-// check the valie of bolder berfore recrusing 
-cout<<"The value of cut one.bo updating "<<one.bo<<endl;
- one.bo = frcut(adj,one.pcut); //calculate the bound  
-// one.bo = bounder(adj,one.pcut);
+one.cluster = addEdge(one.cluster,node,ref.second,j); // stores the clusters. 
 
+//one.bo = nd_bounder(adj,)
+one.bo = bounder(adj,one.pcut);
+cout<<"The value of cut one.bo updating "<<one.bo<<endl;
+
+
+ 
+ 
 if(lower > one.bo && lower > 0){
   cout<<"Condition where the lower bound is greater then upper "<<one.bo <<endl; 
   cout<<"Lower: "<<lower<<endl;
-  one.bo = bounder(adj,one.pcut); // we are stiking with the better bound
-  one = ken; // we update it back to the previous setting.
+   one = ken; // we update it back to the previous setting.
   return one; 
   break;
 }
 
 cout<<"Value of bounder before going into the recursion join: "<<one.bo<<endl;
 one = depth_search(one.jyon,one,j,bound,lower);
-lower = bounder(one.bd_ref,one.pcut);//////
+cout<<"The new bounder seems to be the problem"<<endl;
+//lower = bounder(one.bd_ref,one.pcut);
+//lower = one.bo;
 cout<<"It's returns here, the bound is also updated: "<<one.bo<<endl;
 
-
-
-
-
-
-//bound = one.bo; don't need that because the bound are alredy calculated.
-printGraph(one.jyon);
 cout<<"=========================================Cut================================"<<endl;
-printGraph(adj);
-
 
 //cut 
 ken.pcut = addEdge(one.pcut,node,ref.first,ref.second);
+ken.bo = bounder(adj,ken.pcut); // current bound 
 ken.part = remove_edge_2(adj,node,ref.second); // another way would be to return at the end condition, it's more efficent.
+ken.bd_ref = ken.part;
 
 
 cout<<"Value of one.bo before going into the recursion Cut: "<<one.bo<<endl;
-ken.bo = bounder(adj,ken.pcut);
-cout<<"Value of ken.bobefore going into the recursion Cut: "<<ken.bo<<endl;
 
+//ken.bo = bounder(ken.part,ken.pcut); // future bound.
+ 
+cout<<"Value of ken.bobefore going into the recursion Cut: "<<ken.bo<<endl;
 
 if(lower > ken.bo) // means even the lower bound of the one is better that means there is no use going in here 
 {
@@ -542,13 +538,10 @@ if(lower > ken.bo) // means even the lower bound of the one is better that means
   cout<< "Values ken.bo: "<<ken.bo<<endl;
 
   return one; 
- // return ken;  // this is causeing the problem because we are returning the one with the lower bound
   break;
 }
-//ken.part = remove_edge_2(adj,node,ref.second);
 ken = depth_search(ken.part,ken,ref.second,bound,lower); //returns here 
 cout<<"The original bound is : "<<bound<<endl;
-//ken.bo = bounder(adj,ken.pcut);
 cout<<"The  bound after remove : "<<ken.bo<<endl;
 printGraph(ken.jyon);
 cout<<"Value of ken jyon"<<endl;
@@ -571,7 +564,6 @@ cout<<"It's in the break condition"<<endl;
 
 cout<<"The end print graph"<<endl;
 cout<<"The size of the adj: "<<adj.size()<<endl;
-printGraph(adj);
 cout<<"--------------------------------------------------------"<<endl;
 return one;}
 
@@ -587,8 +579,8 @@ multimap<int,pair<int,int>> test;
 tulip graph;
 tulip one;
 
-/*
-vector<vector<int>> myGraphData = readGraphData("hund.txt");
+
+vector<vector<int>> myGraphData = readGraphData("graph_cars.txt");
 for (int x = 0; x < myGraphData.size(); x++) { // Iterate over lines
     for (int y = 0; y < myGraphData[x].size(); y++) { // Iterate over weights in a line
         int weight = myGraphData[x][y];
@@ -599,103 +591,27 @@ for (int x = 0; x < myGraphData.size(); x++) { // Iterate over lines
     }
 }
 
-*/
-//  cout <<"The upper bound is: "<<frcut(adj,test)<<endl;
-
-adj = addEdge(adj,1,5,2); 
-adj = addEdge(adj,1,1,3); 
-adj = addEdge(adj,1,1,4);
-adj = addEdge(adj,1,1,5);
-adj = addEdge(adj,1,1,6);
-adj = addEdge(adj,2,5,3);
-adj = addEdge(adj,2,1,4);
-adj = addEdge(adj,2,1,5); 
-adj = addEdge(adj,2,1,6); 
-adj = addEdge(adj,3,1,4);
-adj = addEdge(adj,3,1,5);
-adj = addEdge(adj,3,1,6);
-adj = addEdge(adj,4,1,5);
-adj = addEdge(adj,4,1,6);
-adj = addEdge(adj,5,8,6);
-
-graph = depth_search(adj,graph,2,0,0); 
-
-
-//checkcut(test,1,2)
 
 
 
-
+graph = depth_search(adj,graph,10,0,0); 
+  
+cout<<"===============bd_ref================"<<endl; 
+ printGraph(graph.bd_ref);
  
-cout<<"===============Cut================"<<endl;
-printGraph(graph.part);
-cout<<"===============Join================"<<endl;
-printGraph(graph.jyon);
- 
-return 0;
-}
-
-
-
-
-
-
 
 /*
-  void ConstraintPropagation(multimap<int,pair<int,int>> adj) {
-    queue<pair<int,int>> selectedEdges;
-    queue<pair<int,int> deselectedEdges;
-
-    // Initialize queues based on initial edge values
-    multimap<int, pair<int, int>>::iterator it = adj.begin();
-    
-      for (int j = 0; j < adj.size(); ++j) {
-        if (it->first == 0) { //fixed edges check if cut or joined
-          //selectedEdges.push({it->first}); // for the joined 
-         // check the cut to see what's been cut 
-        } else {  
-        //  deselectedEdges.push(it->first);
-        }
-        it++;
-      }
-    
-
-    // Process selected edges
-    while (!selectedEdges.empty()) {
-      pair<int,int> edge = selectedEdges.front();
-      selectedEdges.pop();
-
-      for (int k = 0; k < adj.size(); ++k) {
-        // Selection rule
-        if (edges[edge.i][k] == 1 && edges[edge.j][k] != 1) {
-          edges[edge.j][k] = 1;
-          selectedEdges.push({edge.j, k});
-        }
-
-        // Deselection rule
-        if (edges[edge.i][k] != 1 && edges[edge.j][k] != 1) {
-          edges[edge.j][k] = 0;
-          deselectedEdges.push({edge.j, k});
-        }
-      }
-    }
-
-    // Process deselected edges
-    while (!deselectedEdges.empty()) {
-      Edge edge = deselectedEdges.front();
-      deselectedEdges.pop();
-
-      for (int k = 0; k < edges.size(); ++k) {
-        // Deselection rule
-        if (edges[edge.i][k] != 1 && edges[edge.j][k] != 1) {
-          edges[edge.j][k] = 0;
-          deselectedEdges.push({edge.j, k});
-        }
-      }
-    }
-  }
+cout<<"===============cluster================"<<endl;
+printGraph(graph.cluster);
 
 */
+
+
+
+
+
+return 0;
+}
 
 
 
