@@ -1,9 +1,54 @@
 # Branch_and_bound_Multicut
-The multicut problem is a fundamental combinatorial optimization problem with applications in areas such as computer vision and machine learning.  Given an undirected graph with weighted edges, the goal is to partition the graph into components by removing edges, while minimising the total cost of the removed edges or maximising the sum of the edges in the partition. The project follows the description of the latter. 
-In the project, we are working with complete graphs, meaning each node is connected to its subsequent node. 
-This project aims to explore a purely combinatorial branch-and-bound algorithm for solving the multicut problem. In contrast to ILP-based methods, this algorithm will not rely on linear programming, offering potential advantages:
-Faster Exploration: The search tree can be traversed more quickly without the overhead of solving linear programs at each node.
-Structural Exploitation: The algorithm can directly leverage the specific properties of the multicut problem, such as edge contractions.
-Persistence Integration: Techniques to detect persistences (edges that must be included or excluded in any optimal solution) can be easily incorporated.
-The primary tradeoff of a combinatorial approach is potentially weaker lower bounds compared to those obtained through linear programming relaxations. To further explore the bounds, we have calculated the bounds in three  different ways as it will be seen in the testing. 
+There are diffrent test data provided in txt format, plug in the name of text file to test the data 
+vector<vector<int>> myGraphData = readGraphData("graph_cars.txt"); 
+After specify the file please update the start node  at the graph 
+graph = depth_search(adj, graph, 20, 0, 0);
+Please start with the provided test data.
 
+To test the diffrent bounds remove the comment symbole and comment the other bound 
+For the bounder 
+           ======================== Join ===========================
+           //one.bo = frcut(adj,one.pcut); 
+         //   one.bo = nd_bounder(one.jyon, j, one.pcut);
+           one.bo = bounder(adj,one.pcut);   <---------------------  use this
+          one = depth_search(one.jyon, one, j, bound, lower);
+          lower = one.bo;  <------------------------------------------------- use this
+          // lower = bounder(one.bd_ref,one.pcut);
+          ========================== CUT ============================
+          ken.bo = bounder(adj,ken.pcut);  <-----------------------------------------use this
+          //ken.bo = nd_bounder(ken.part, ref.second, ken.pcut);
+           ken = depth_search(ken.part, ken, ref.second, bound, lower);
+
+For the frcut  
+          ======================== Join ===========================
+           one.bo = frcut(adj,one.pcut);    <--------------------- use this
+         //   one.bo = nd_bounder(one.jyon, j, one.pcut);
+        //   one.bo = bounder(adj,one.pcut);
+          one = depth_search(one.jyon, one, j, bound, lower);
+        //lower = one.bo; 
+         lower = bounder(one.bd_ref,one.pcut);  <------------------------------------------------- use this 
+         ========================== CUT ============================
+          ken.bo = bounder(adj,ken.pcut);  <----------------------------------------- use this 
+          //ken.bo = nd_bounder(ken.part, ref.second, ken.pcut);
+           ken = depth_search(ken.part, ken, ref.second, bound, lower);
+
+For the nd_bounder 
+    ======================== Join ===========================
+       //   one.bo = frcut(adj,one.pcut);    
+            one.bo = nd_bounder(one.jyon, j, one.pcut);  <--------------------- use this
+        //  one.bo = bounder(adj,one.pcut);
+          one = depth_search(one.jyon, one, j, bound, lower);
+          lower = one.bo; <------------------------------------------------- use this 
+        //lower = bounder(one.bd_ref,one.pcut);  
+   ========================== CUT ============================
+         //ken.bo = bounder(adj,ken.pcut); 
+           ken.bo = nd_bounder(ken.part, ref.second, ken.pcut);  <----------------------------------------- use this 
+           ken = depth_search(ken.part, ken, ref.second, bound, lower);
+
+
+
+
+
+
+
+           
