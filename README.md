@@ -43,8 +43,7 @@ For the nd_bounder
    ========================== CUT ============================
          //ken.bo = bounder(adj,ken.pcut); 
            ken.bo = nd_bounder(ken.part, ref.second, ken.pcut);  <----------------------------------------- use this 
-           ken = depth_search(ken.part, ken, ref.second, bound, lower);
-
+           ken = depth_search(ken.part, ken, ref.second, bound, lower); 
 
 
 
